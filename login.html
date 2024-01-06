@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+</head>
+
+<style>
+    body{
+        background-color: rgb(56, 53, 53);
+    }
+    .login-form{
+    background-color: antiquewhite;
+    border: 2px solid black;
+    border-radius: 4px;
+    position: absolute;
+        
+  top: 12px;
+  left: 50%;
+  transform: translate( -50%);
+  padding: 20px;
+  padding-left: 50px;
+  margin-top: 50px;
+    }
+    form{
+        width: 50%;
+    }
+    .input-fields{
+        margin: 8px;
+    }
+    </style>
+<body>
+    <div class="login-form">
+        <form action="" method="post">
+            <label for="">Email</label>
+            <input type="text" name = "email">
+            <br>
+            <label for="">Password</label>
+            <input type="text" name="password">
+            <br>
+            <input type="submit" value="login">
+            <br>
+            <a href="/signUp.html">New user? signup here</a>
+        </form>
+    </div>
+</body>
+</html>

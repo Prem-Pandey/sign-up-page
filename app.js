@@ -38,7 +38,7 @@ const values = [userName, email, password, joinedDate, updateDate];
 try {
   const [rows, fields] = await con.execute(sql, values);
   console.log('Data inserted successfully');
-  res.send("signup complete")
+  res.sendFile(path.join(__dirname+'/login.html'));
   // res.redirect('/data');
 } catch (error) {
   console.error('Error executing SQL query:', error);
