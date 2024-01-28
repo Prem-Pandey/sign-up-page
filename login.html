@@ -29,9 +29,25 @@
     .input-fields{
         margin: 8px;
     }
+
+ #expense-container {
+  max-width: 400px;
+  margin: 20px auto;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input,
+select,
+button {
+  margin-bottom: 10px;
+}
     </style>
 <body>
-    <div class="login-form">
+    <div class="login-form" id="login-container">
         <form>
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required>
@@ -44,15 +60,30 @@
             <a href="/signUp.html">New user? signup here</a>
         </form>
     </div>
-    <!-- <form id="loginForm">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
+    <div id="expense-container" style="display: none;">
+        <h2>Add Expense</h2>
+        <form id="expenseForm">
+          <label for="amount">Amount:</label>
+          <input type="number" id="amount" name="amount" required>
     
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
+          <label for="description">Description:</label>
+          <input type="text" id="description" name="description" required>
     
-        <button type="button" onclick="login()">Log In</button>
-      </form> -->
+          <label for="category">Category:</label>
+          <select id="category" name="category" required>
+            <option value="Food">Food</option>
+            <option value="Petrol">Petrol</option>
+            <option value="Salary">Salary</option>
+            <!-- Add more options as needed -->
+          </select>
+    
+          <button type="button" onclick="addExpense()">Add Expense</button>
+        </form>
+    
+        <h2>Expense History</h2>
+        <ul id="expenseList"></ul>
+      </div>
+    
 </body>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
@@ -71,7 +102,11 @@ async function login() {
     alert('login successful');
     if (response.status === 200 && response.data === 'Login successful') {
       console.log('Login successful');
-      
+      document.getElementById('login-container').style.display = 'none';
+      document.getElementById('expense-container').style.display = 'block';
+
+      // Fetch and display existing expenses
+      fetchExpenses();
     } else {
       console.error('Login failed:', response.data);
     }
@@ -79,6 +114,158 @@ async function login() {
     console.error('Error during login:', error);
   }
 }
+
+async function addExpense() {
+  const amount = document.getElementById('amount').value;
+  const description = document.getElementById('description').value;
+  const category = document.getElementById('category').value;
+
+  try {
+    // Make a request to your add expense endpoint on the backend
+    await axios.post('http://localhost:3000/addExpense', {
+      amount,
+      description,
+      category,
+    });
+
+    // Fetch and display updated expenses
+    fetchExpenses();
+  } catch (error) {
+    console.error('Error adding expense:', error);
+  }
+}
+
+async function fetchExpenses() {
+  try {
+    // Make a request to your fetch expenses endpoint on the backend
+    const response = await axios.get('http://localhost:3000/fetchExpenses');
+
+    // Display the fetched expenses in the list
+    const expenseList = document.getElementById('expenseList');
+    expenseList.innerHTML = '';
+
+    response.data.forEach((expense) => {
+      const listItem = document.createElement('li');
+      listItem.textContent = `Amount: ${expense.amount}, Description: ${expense.description}, Category: ${expense.category}`;
+      expenseList.appendChild(listItem);
+    });
+  } catch (error) {
+    console.error('Error fetching expenses:', error);
+  }
+}
+
+// Continuing from the previous frontend code...
+
+// Fetch and display updated expenses on page load
+window.onload = async function () {
+  await login(); // You may need to adjust this based on your authentication logic
+  fetchExpenses();
+};
+
+// async function addExpense() {
+//   const amount = document.getElementById('amount').value;
+//   const description = document.getElementById('description').value;
+//   const category = document.getElementById('category').value;
+
+//   try {
+//     // Make a request to your add expense endpoint on the backend
+//     await axios.post('http://localhost:3000/addExpense', {
+//       amount,
+//       description,
+//       category,
+//     });
+
+async function addExpense() {
+  const amount = document.getElementById('amount').value;
+  const description = document.getElementById('description').value;
+  const category = document.getElementById('category').value;
+
+  try {
+    // Make a request to your add expense endpoint on the backend
+    await axios.post('http://localhost:3000/addExpense', {
+      amount,
+      description,
+      category,
+    });
+
+    // Fetch and display updated expenses
+    fetchExpenses();
+  } catch (error) {
+    console.error('Error adding expense:', error);
+  }
+}
+
+
+    // Fetch and display updated expenses
+//     fetchExpenses();
+//   } catch (error) {
+//     console.error('Error adding expense:', error);
+//   }
+// }
+
+
+const expenseListContainer = document.getElementById('expenseList');
+
+async function fetchExpenses() {
+  try {
+    // Make a request to your get all expenses endpoint on the backend
+    const response = await axios.get('http://localhost:3000/getAllExpenses');
+
+    // Display the expenses on the screen
+    displayExpenses(response.data);
+  } catch (error) {
+    console.error('Error fetching expenses:', error);
+  }
+}
+
+// Assuming you have a function to display expenses on the screen
+// function displayExpenses(expenses) {
+//   // Clear previous content
+//   expenseListContainer.innerHTML = '';
+
+//   // Display the expenses
+//   expenses.forEach((expense) => {
+//     const expenseItem = document.createElement('div');
+//     expenseItem.textContent = `Amount: ${expense.amount}, Description: ${expense.description}, Category: ${expense.category}`;
+//     expenseListContainer.appendChild(expenseItem);
+//   });
+// }
+
+function displayExpenses(expenses) {
+  // Clear previous content
+  expenseListContainer.innerHTML = '';
+
+  // Display the expenses
+  expenses.forEach((expense) => {
+    const expenseItem = document.createElement('div');
+    expenseItem.textContent = `Amount: ${expense.amount}, Description: ${expense.description}, Category: ${expense.category}`;
+
+    // Create a delete button for each expense
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.addEventListener('click', () => deleteExpense(expense.id));
+
+    // Append the delete button to the expense item
+    expenseItem.appendChild(deleteButton);
+
+    // Append the expense item to the container
+    expenseListContainer.appendChild(expenseItem);
+  });
+}
+
+async function deleteExpense(expenseId) {
+  try {
+    // Make a request to delete the expense
+    await axios.delete(`http://localhost:3000/deleteExpense/${expenseId}`);
+
+    // Fetch and display updated expenses after deletion
+    fetchExpenses();
+  } catch (error) {
+    console.error('Error deleting expense:', error);
+  }
+}
+
+
 
 </script>
 </html>
